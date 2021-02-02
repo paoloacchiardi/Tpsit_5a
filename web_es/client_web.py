@@ -15,25 +15,31 @@ def increase_pw(pw, last):
     return pw,last
 
 def main():
-    #POST request, pdf online = https://github.com/conradis/TPSIT-classi-quinte/blob/main/Lezione_4-HTTP-aa1718.pdf
     client = sck.socket(sck.AF_INET,sck.SOCK_STREAM)
     client.connect(('localhost',5000))
     username = "Paolo"
     
     post = "POST http://127.0.0.1:5000/ HTTP/1.0"
     host = "Host: http://127.0.0.1:5000"
-    content_type = "Content_type: application/x-www-form-urlencoded" 
+    content_type = "Content_type: 'application/x-www-form-urlencoded'" 
 
     #bruteforce algorithm
     pw = [32]
     last = len(pw)-1 #last value in pw
     while True: #while pw not right
-        pw_right = ""
+        pw_right = "paolo"
         for char in pw:
-            pw_right += chr(char) #my string = pw string
+            pw_right += chr(char) #pw_right = pw string
         body = "name=" + username + "&psw=" + pw_right
-        content_lenght = "Content_lenght: " + str(len(body))
-        mex = post + "\n" + host + "\n" + content_type + "\n" + content_lenght + "\n\n" + body #POST message
+        mex = ''' \
+        POST http://127.0.0.1:5000/ HTTP/1.0
+        Host: 127.0.0.1:5000
+        Content-Type: 'application/x-www-form-urlencoded'
+        Content-Length: {lunghezza}
+
+        {payload}
+        '''
+        mex = mex.format(lunghezza=len(body), payload=body)
         client.sendall(mex.encode())
         data = client.recv(4096)
         print(data.decode())
